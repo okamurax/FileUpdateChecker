@@ -60,7 +60,6 @@ namespace FileUpdateCheck
                         ButtonStateChange(ButtonState.working);
                         WindowState = FormWindowState.Minimized;
                         ShowInTaskbar = false;
-
                     }
                 }
             }
