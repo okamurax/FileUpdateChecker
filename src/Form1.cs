@@ -1,24 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-using System.Xml.Serialization;
 using System.IO;
+using System.Text;
+using System.Windows.Forms;
+using System.Xml.Serialization;
 
-namespace FileUpdateCheck
+namespace FileUpdateChecker
 {
     public partial class Form1 : Form
     {
         string _XmlPath = Application.StartupPath + @"\dat_path.xml";
         string _XmlFileList = Application.StartupPath + @"\dat_file_list.xml";
 
-        Timer _Timer = new Timer();
+        Timer _MainTimer = new Timer();
+
         List<MyFileInfo> _BeforeFileList = new List<MyFileInfo>();
 
         public Form1()
@@ -28,8 +24,8 @@ namespace FileUpdateCheck
             EventAttach();
             SetNotifyIcon();
 
-            _Timer.Interval = 1000 * 60; // 1分
-            _Timer.Tick += (s, e) => TimerWork();
+            _MainTimer.Interval = 1000 * 60; // 1分
+            _MainTimer.Tick += (s, e) => TimerWork();
 
             ButtonStateChange(ButtonState.waiting);
 
@@ -55,7 +51,7 @@ namespace FileUpdateCheck
 
                         // 自動起動するのはXMLが2つ有った場合
                         // FileListのXmlはストップ時削除するので、2つある場合、ストップしていないということ
-                        _Timer.Start();
+                        _MainTimer.Start();
 
                         ButtonStateChange(ButtonState.working);
                         WindowState = FormWindowState.Minimized;
@@ -77,18 +73,12 @@ namespace FileUpdateCheck
 
             this.FormClosing += (s, e) =>
             {
-                e.Cancel = true;
-                WindowState = FormWindowState.Minimized;
+                DialogResult yesNo = MessageBox.Show("終了しますか？", "", MessageBoxButtons.YesNo);
+                if (yesNo == DialogResult.No) e.Cancel = true;   
             };
 
             StartButton.Click += (s, e) => StartWatch();
             StopButton.Click += (s, e) => StopWatch();
-            ExitButton.Click += (s, e) =>
-            {
-                DialogResult yesNo = MessageBox.Show("終了しますか？", "", MessageBoxButtons.YesNo);
-                if (yesNo == DialogResult.No) return;
-                Application.Exit();
-            };
         }
 
         private void SetNotifyIcon()
@@ -202,7 +192,7 @@ namespace FileUpdateCheck
             // TimerのTickが実行される前に終了した場合、_XmlFileListが生成されていないため
             // これで2つのXmlが存在する状態になる
 
-            _Timer.Start();
+            _MainTimer.Start();
 
             ButtonStateChange(ButtonState.working);
         }
@@ -213,7 +203,7 @@ namespace FileUpdateCheck
             File.Delete(_XmlFileList);
             // 終了時、Xmlは1つ(Pathのみ)となる
 
-            _Timer.Stop();
+            _MainTimer.Stop();
 
             ButtonStateChange(ButtonState.waiting);
         }

@@ -1,4 +1,4 @@
-﻿namespace FileUpdateCheck
+﻿namespace FileUpdateChecker
 {
     partial class Form1
     {
@@ -32,7 +32,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.StartButton = new System.Windows.Forms.Button();
             this.StopButton = new System.Windows.Forms.Button();
-            this.ExitButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // TargetFolderPath
@@ -75,22 +74,11 @@
             this.StopButton.Text = "停止";
             this.StopButton.UseVisualStyleBackColor = true;
             // 
-            // ExitButton
-            // 
-            this.ExitButton.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.ExitButton.Location = new System.Drawing.Point(64, 57);
-            this.ExitButton.Name = "ExitButton";
-            this.ExitButton.Size = new System.Drawing.Size(101, 41);
-            this.ExitButton.TabIndex = 2;
-            this.ExitButton.Text = "終了";
-            this.ExitButton.UseVisualStyleBackColor = true;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(385, 104);
-            this.Controls.Add(this.ExitButton);
             this.Controls.Add(this.StopButton);
             this.Controls.Add(this.StartButton);
             this.Controls.Add(this.label1);
@@ -108,7 +96,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button StartButton;
         private System.Windows.Forms.Button StopButton;
-        private System.Windows.Forms.Button ExitButton;
     }
 }
 
