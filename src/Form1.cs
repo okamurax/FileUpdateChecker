@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml.Serialization;
@@ -14,6 +15,7 @@ namespace FileUpdateChecker
         string _XmlFileList = Application.StartupPath + @"\dat_file_list.xml";
 
         Timer _MainTimer = new Timer();
+        NotifyIcon _NotifyIcon = new NotifyIcon();
 
         List<MyFileInfo> _BeforeFileList = new List<MyFileInfo>();
 
@@ -77,40 +79,47 @@ namespace FileUpdateChecker
                 if (yesNo == DialogResult.No) e.Cancel = true;   
             };
 
+            this.FormClosed += (s, e) =>
+            {
+                _NotifyIcon.Dispose();
+            };
+
             StartButton.Click += (s, e) => StartWatch();
             StopButton.Click += (s, e) => StopWatch();
         }
 
-        private void SetNotifyIcon()
+        private Icon[] CreateIconImageArray()
         {
-            Bitmap darkGreenBitmap = new Bitmap(32, 32);
-            Graphics darkGreenGraphics = Graphics.FromImage(darkGreenBitmap);
-            darkGreenGraphics.FillRectangle(Brushes.DarkGreen, darkGreenGraphics.VisibleClipBounds);
+            Bitmap yellowGreenBitmap = new Bitmap(32, 32);
+            Graphics yellowGreenGraphics = Graphics.FromImage(yellowGreenBitmap);
+            yellowGreenGraphics.FillRectangle(Brushes.YellowGreen, yellowGreenGraphics.VisibleClipBounds);
 
             Bitmap greenBitmap = new Bitmap(32, 32);
             Graphics greenGraphics = Graphics.FromImage(greenBitmap);
             greenGraphics.FillRectangle(Brushes.Green, greenGraphics.VisibleClipBounds);
 
-            Icon[] icons = new Icon[] {
-                Icon.FromHandle(darkGreenBitmap.GetHicon()),
+            return new Icon[] {
+                Icon.FromHandle(yellowGreenBitmap.GetHicon()),
                 Icon.FromHandle(greenBitmap.GetHicon())
             };
+        }
 
-            NotifyIcon notifyIcon = new NotifyIcon();
-            notifyIcon.Icon = Icon.FromHandle(darkGreenBitmap.GetHicon());
-            notifyIcon.Visible = true;
-            notifyIcon.Click += new EventHandler((object sender, EventArgs e) => {
+        private void SetNotifyIcon()
+        {
+            Icon[] icons = CreateIconImageArray();
+            _NotifyIcon.Visible = true;
+            _NotifyIcon.Click += new EventHandler((object sender, EventArgs e) => {
                 WindowState = FormWindowState.Normal;
                 ShowInTaskbar = true;
             });
 
             int i = 0;
             var t = new Timer();
-            t.Interval = 1000;
+            t.Interval = 700;
             t.Tick += (s, e) =>
             {
-                notifyIcon.Icon = icons[i++];
-                if (i == 2) i = 0;
+                _NotifyIcon.Icon = icons[i++];
+                if (i == (icons.Count())) i = 0;
             };
             t.Start();
         }
