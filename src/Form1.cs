@@ -124,30 +124,35 @@ namespace FileUpdateChecker
             t.Start();
         }
 
-        private void TimerWork()
+        private void CompareFileList()
         {
+            // 追加と更新のみ、削除は検知しない
+
             List<string> message = new List<string>();
 
-            if (_BeforeFileList.Count > 0)
+            foreach (var currentFileInfo in GetCurrentMyFileInfoList())
             {
-                foreach(var currentFileInfo in GetCurrentMyFileInfoList())
+                bool isNew = true;
+                bool isUpdate = false;
+
+                foreach (var beforeFileInfo in _BeforeFileList)
                 {
-                    bool isNew = true;
-                    bool isUpdate = false;
-
-                    foreach (var beforeFileInfo in _BeforeFileList)
+                    if (currentFileInfo.Name == beforeFileInfo.Name)
                     {
-                        if (currentFileInfo.Name == beforeFileInfo.Name)
-                        {
-                            isNew = false;
-                            if (currentFileInfo.Length != beforeFileInfo.Length) isUpdate = true;
-                        }
+                        isNew = false;
+                        if (currentFileInfo.Length != beforeFileInfo.Length) isUpdate = true;
                     }
-
-                    if (isNew) message.Add("新規：　" + currentFileInfo.Name);
-                    if (isUpdate) message.Add("更新：　" + currentFileInfo.Name);
                 }
+
+                if (isNew) message.Add("新規：　" + currentFileInfo.Name);
+                if (isUpdate) message.Add("更新：　" + currentFileInfo.Name);
             }
+            if (message.Count > 0) MessageBox.Show(string.Join(Environment.NewLine, message));
+        }
+
+        private void TimerWork()
+        {
+            if (_BeforeFileList.Count > 0) CompareFileList();
 
             _BeforeFileList.Clear();
             _BeforeFileList = new List<MyFileInfo>(GetCurrentMyFileInfoList());
@@ -156,8 +161,6 @@ namespace FileUpdateChecker
             {
                 new XmlSerializer(typeof(List<MyFileInfo>)).Serialize(sw, _BeforeFileList);
             }
-
-            if (message.Count > 0) MessageBox.Show(string.Join(Environment.NewLine, message));
         }
 
         private List<MyFileInfo> GetCurrentMyFileInfoList()
@@ -245,5 +248,4 @@ namespace FileUpdateChecker
         public string Name;
         public long Length;
     }
-
 }
